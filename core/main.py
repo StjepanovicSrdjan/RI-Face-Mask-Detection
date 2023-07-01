@@ -10,6 +10,9 @@ from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
 import scipy
 import h5py
+import os
+
+FILENAME = "plot"
 
 
 def init_model():
@@ -21,7 +24,7 @@ def init_model():
 	model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform'))
 	model.add(MaxPooling2D((2, 2)))
 	
-	model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform'))
+	model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform'))
 	model.add(MaxPooling2D((2, 2)))
 	
 	model.add(Flatten())
@@ -46,8 +49,8 @@ def save_plots(history):
 	axs[1].plot(history.history['val_accuracy'], color='orange', label='test')
 	fig.tight_layout()
 
-	filename = sys.argv[0].split('/')[-1]
-	pyplot.savefig(filename + '_learning_curves.png')
+	
+	pyplot.savefig(FILENAME + '_learning_curves.png')
 	pyplot.close()
  
 
@@ -57,9 +60,9 @@ def eval():
 	train_datagen = ImageDataGenerator(rescale=1.0 / 255.0)
 	test_datagen = ImageDataGenerator(rescale=1.0 / 255.0)
  
-	train_it = train_datagen.flow_from_directory('dataset/train/',class_mode='binary', batch_size=64, target_size=(150, 150))
-	test_it = test_datagen.flow_from_directory('dataset/test/',class_mode='binary', batch_size=64, target_size=(150, 150))
-	val_it = test_datagen.flow_from_directory('dataset/val/', class_mode='binary', batch_size=64, target_size=(150, 150))
+	train_it = train_datagen.flow_from_directory('drive/MyDrive/ColabNotebooks/face_mask_detection/dataset/train/',class_mode='binary', batch_size=64, target_size=(150, 150))
+	test_it = test_datagen.flow_from_directory('drive/MyDrive/ColabNotebooks/face_mask_detection/dataset/test/',class_mode='binary', batch_size=64, target_size=(150, 150))
+	val_it = test_datagen.flow_from_directory('drive/MyDrive/ColabNotebooks/face_mask_detection/dataset/val/', class_mode='binary', batch_size=64, target_size=(150, 150))
 
 	history = model.fit(train_it, steps_per_epoch=len(train_it),
 		validation_data=val_it, validation_steps=len(val_it), epochs=20, verbose=0)
@@ -72,10 +75,8 @@ def eval():
 	print('Test: > %.3f' % (accTest * 100.0))
 
 	save_plots(history)
-	model.save('end_model.h5')
+	model.save('model.h5')
 	
 	
-
-if __name__=="__main__":
-    eval()
+eval()
  
